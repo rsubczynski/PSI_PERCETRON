@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -68,8 +69,11 @@ class CartesianPanel extends JPanel {
     // distance of coordinate strings from axis
     public static final int AXIS_STRING_DISTANCE = 20;
 
+    List<Point> pointListGroup1 = new ArrayList<>();
+    List<Point> pointListGroup2 = new ArrayList<>();
 
     public void paintComponent(Graphics g) {
+
 
         super.paintComponent(g);
 
@@ -108,7 +112,7 @@ class CartesianPanel extends JPanel {
         g2.fillOval(x0, y0,
                 ORIGIN_COORDINATE_LENGHT, ORIGIN_COORDINATE_LENGHT);
 
-        g2.drawLine(50,600,600,50);
+        g2.drawLine(50, 600, 600, 50);
         addPoint();
 
 //        // draw text "X" and draw text "Y"
@@ -128,7 +132,7 @@ class CartesianPanel extends JPanel {
                 / yCoordNumbers;
 
         // draw x-axis numbers
-        for(int i = 1; i < xCoordNumbers; i++) {
+        for (int i = 1; i < xCoordNumbers; i++) {
             g2.drawLine(X_AXIS_FIRST_X_COORD + (i * xLength),
                     X_AXIS_Y_COORD - SECOND_LENGHT,
                     X_AXIS_FIRST_X_COORD + (i * xLength),
@@ -139,7 +143,7 @@ class CartesianPanel extends JPanel {
         }
 
         //draw y-axis numbers
-        for(int i = 1; i < yCoordNumbers; i++) {
+        for (int i = 1; i < yCoordNumbers; i++) {
             g2.drawLine(Y_AXIS_X_COORD - SECOND_LENGHT,
                     Y_AXIS_SECOND_Y_COORD - (i * yLength),
                     Y_AXIS_X_COORD + SECOND_LENGHT,
@@ -151,15 +155,68 @@ class CartesianPanel extends JPanel {
     }
 
     private void addPoint() {
-        for (Point point : generatePointList()){
-            g2.fillOval(point.getX(),point.getY(),5,5);
+        for (Point point : generatePointList()) {
+            g2.fillOval(point.getX(), point.getY(), 5, 5);
+            groupPoint(point);
         }
     }
 
-    ArrayList<Point> generatePointList(){
+    private ArrayList<Point> generatePointList() {
         ArrayList<Point> pointsList = new ArrayList<Point>();
-        pointsList.add(new Point(1,1));
-        pointsList.add(new Point(5,5));
+        for (int i = 1; i < 10; i++) {
+            for (int j = 1; j < 10; j++) {
+                if (i < j) {
+                    pointsList.add(new Point(i, j, POINT.GROUP1));
+                } else {
+                    pointsList.add(new Point(i, j, POINT.GROUP2));
+                }
+            }
+        }
+
+        pointsList.add(new Point(2, 4, POINT.NOTHING));
         return pointsList;
+    }
+
+    enum POINT {
+        GROUP1, GROUP2, NOTHING
+    }
+
+    private void groupPoint(Point point) {
+        switch (point.getPoint()) {
+            case GROUP1:
+                leanGroup1(point);
+                break;
+            case GROUP2:
+                leanGroup2(point);
+                break;
+            case NOTHING:
+                searchGroup(point);
+                break;
+        }
+    }
+
+    private void searchGroup(Point point) {
+        for (Point pointInList : pointListGroup1) {
+            if (pointInList.getX() == point.getX() && pointInList.getY() == point.getY()) {
+                System.out.print("Punkt nalezy do grupy 1 ");
+                return;
+            }
+        }
+
+        for (Point pointInList : pointListGroup2) {
+            if (pointInList.getX() == point.getX() && pointInList.getY() == point.getY()) {
+                System.out.print("Punkt nalezy do grupy 1 ");
+                return;
+            }
+        }
+        System.out.print("Nie znaleziono punktu");
+    }
+
+    private void leanGroup1(Point point) {
+        pointListGroup1.add(point);
+    }
+
+    private void leanGroup2(Point point) {
+        pointListGroup2.add(point);
     }
 }
